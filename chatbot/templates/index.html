@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask App</title>
+</head>
+<body>
+    <h1>Welcome to the Flask App</h1>
+    <button onclick="generateLink()">Generate Embedded Link</button>
+    <p id="linkDisplay"></p>
+
+    <script>
+        function generateLink() {
+            fetch('/generate-link')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('linkDisplay').innerText = data.link;
+                });
+        }
+    </script>
+</body>
+</html>

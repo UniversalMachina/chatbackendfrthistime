@@ -1,0 +1,171 @@
+:root {
+    /* Exponential curve gradient variables */
+    --background-white: #FFFFFF; /* White */
+    --background-light-blue: #FFFFFF; /* Light blue */
+    --background-medium-blue: #FFFFFF; /* Medium blue */
+    --background-dark-blue: #B3D9FF; /* Dark blue */
+    /* Other variables remain unchanged */
+    --chat-background-start: #FFFFFF;
+    --chat-background-end: #E6F7FF;
+    --bot-message-bg-start: #E6F7FF;
+    --bot-message-bg-end: #CCEFFF;
+    --user-message-bg-start: #DAF0FF;
+    --user-message-bg-end: #CCEFFF;
+    --text-color: #333333;
+    --button-bg-start: #DAF0FF;
+    --button-bg-end: #CCEFFF;
+    --button-hover-bg-start: #B3E0FF;
+    --button-hover-bg-end: #CCEFFF;
+    --input-border: #B3E0FF;
+    --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to bottom, var(--background-white) 0%,  var(--background-dark-blue) 100%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    /* padding: 50px; */
+}
+
+#app-container {
+    display: flex;
+    justify-content: center; /* Center the children horizontally */
+    align-items: center; /* Center the children vertically */
+    height: 100vh; /* Use the full height of the viewport */
+    width: 100vw; /* Use the full width of the viewport */
+    position: relative; /* Needed for absolute positioning of the bunny image */
+    padding: 0; /* Adjust or remove padding as needed */
+}
+
+#bunny-guitar {
+    position: absolute; /* Position it absolutely relative to app-container */
+    left: 20%; /* Move it closer to the middle */
+    top: 50%; /* Start at 50% from the top */
+    transform: translate(0, -50%); /* Center it vertically */
+    max-width: 600px; /* Adjust the size as needed */
+    z-index: 10; /* Ensure it's above other elements */
+}
+
+#bunny-image {
+    width: 100%;
+    height: auto;
+    border-radius: 20px; /* Adjust if you want rounded corners */
+    filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.3)); /* Shadow around the PNG contents */
+}
+
+#chat-container {
+    position: absolute; /* Absolute position relative to the app-container */
+    right: 10%; /* Move it closer to the middle */
+    width: 400px; /* Adjusted width */
+    height: 700px; /* Adjust height if necessary */
+    background: linear-gradient(to bottom, var(--chat-background-start), var(--chat-background-end));
+    border-radius: 20px;
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background: linear-gradient(to bottom, var(--button-bg-start), var(--button-bg-end));
+    height: 60px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 20px;
+    color: var(--text-color);
+}
+
+#chat-box {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto; /* Allows scrolling but with styled scrollbar */
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: var(--chat-background-end) var(--chat-background-start); /* For Firefox */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+#chat-box::-webkit-scrollbar {
+    display: none; /* Hide the scrollbar */
+}
+.message {
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    max-width: 80%;
+    word-wrap: break-word;
+    box-shadow: var(--box-shadow);
+}
+
+.message.bot {
+    background: linear-gradient(to bottom, var(--bot-message-bg-start), var(--bot-message-bg-end));
+    color: var(--text-color);
+    align-self: flex-start;
+    border-bottom-left-radius: 0;
+}
+
+.message.user {
+    background: linear-gradient(to bottom, var(--user-message-bg-start), var(--user-message-bg-end));
+    color: var(--text-color);
+    align-self: flex-end;
+    border-bottom-right-radius: 0;
+}
+
+.message-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 15px;
+}
+
+footer {
+    background: linear-gradient(to bottom, var(--button-bg-start), var(--button-bg-end));
+    padding: 10px;
+    display: flex;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+#user-input {
+    flex: 1;
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid var(--input-border);
+    border-radius: 20px;
+    outline: none;
+}
+
+button {
+    background: linear-gradient(to bottom, var(--button-bg-start), var(--button-bg-end));
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    color: var(--text-color);
+    box-shadow: var(--box-shadow);
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background: linear-gradient(to bottom, var(--button-hover-bg-start), var(--button-hover-bg-end));
+}
