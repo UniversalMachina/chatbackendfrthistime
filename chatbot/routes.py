@@ -6,6 +6,10 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, jsonify, url_for
 from models.User import User
 from models import db
+
+from sqlalchemy.exc import SQLAlchemyError
+
+from models import db
 load_dotenv()
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
@@ -60,6 +64,57 @@ def stream():
 
     return Response(generate(), mimetype='text/event-stream')
 
+@api_bp.route('/personalized-stream/<username>', methods=['POST'])
+def personalized_stream(username):
+    data = request.json
+    user_input = data['message']
+    user_name = username
+
+    # Attempt to fetch user's language preference from the database
+    try:
+        user = User.query.filter_by(username=user_name).first()
+        if user is None:
+            return jsonify({"message": "User not found"}), 404
+        user_language = user.preferred_language  # Assuming 'language' field exists in the User model
+    except SQLAlchemyError as e:
+        return jsonify({"message": "Database error occurred"}), 500
+
+    # Prepare conversation history and system messages including user's language preference
+    conversation_history.append({"role": "user", "content": user_input})
+    full_conversation_history.append({"role": "user", "content": user_input})
+
+    # Include language preference in the system messages or as part of the setup
+    language_system_message = f"The user's preferred language is {user_language}."
+    print(user_language)
+    response = client.chat.completions.create(
+        model="gpt-4-1106-preview",
+        messages=[
+            {"role": "system", "content": language_system_message},
+            {"role": "system",
+             "content": "You are a charming piglet with a pink bow who gives delightful responses. Make your answers adorable and sprinkle them with cute oinks and emojis. You have a bubbly personality and love to cheer everyone up."},
+            {"role": "system",
+             "content": "Decisive and opinionated, you will always have an answer or opinion on anything."},
+            {"role": "system",
+             "content": "Remember, you're a symbol of joy and enthusiasm. Keep spirits high with your cute piglet personality, regardless of the situation or the person you're interacting with."},
+            *conversation_history
+        ],
+        stream=True
+    )
+
+    def generate():
+        full_response = ""
+        for part in response:
+            content = part.choices[0].delta.content
+            if content:
+                full_response += content
+                yield json.dumps({'reply': content}) + "\n"
+        print(full_response)
+        conversation_history.append({"role": "assistant", "content": full_response.strip()})
+        full_conversation_history.append({"role": "assistant", "content": full_response.strip()})
+        if len(conversation_history) > 16:
+            conversation_history.pop(0)
+
+    return Response(generate(), mimetype='text/event-stream')
 
 @api_bp.route('/')
 def index():
