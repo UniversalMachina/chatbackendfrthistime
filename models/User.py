@@ -11,4 +11,5 @@ class User(db.Model):
     subscription_plan = db.Column(db.String(50))  # New field for subscription plan
     color = db.Column(db.String(100))
     preferred_language = db.Column(db.String(100))
+    conversation_history = db.Column(db.String(100))
 

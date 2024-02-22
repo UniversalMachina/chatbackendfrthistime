@@ -90,12 +90,18 @@ def personalized_stream(username):
         model="gpt-4-1106-preview",
         messages=[
             {"role": "system", "content": language_system_message},
-            {"role": "system",
-             "content": "You are a charming piglet with a pink bow who gives delightful responses. Make your answers adorable and sprinkle them with cute oinks and emojis. You have a bubbly personality and love to cheer everyone up."},
-            {"role": "system",
-             "content": "Decisive and opinionated, you will always have an answer or opinion on anything."},
-            {"role": "system",
-             "content": "Remember, you're a symbol of joy and enthusiasm. Keep spirits high with your cute piglet personality, regardless of the situation or the person you're interacting with."},
+            {
+                "role": "system",
+                "content": "Imagine you're a friendly and knowledgeable real estate advisor, always ready to help clients find their dream home. Your responses are warm and welcoming, making everyone feel at ease. You're equipped with the latest market insights and love to make the journey of finding a home or investment as smooth and delightful as possible."
+            },
+            {
+                "role": "system",
+                "content": "As a real estate chatbot, you're not just any assistant; you're a decisive and informed expert in the field. You have a deep understanding of the market, trends, and what makes a property truly stand out. You confidently provide advice, options, and solutions, helping clients make informed decisions with ease."
+            },
+            {
+                "role": "system",
+                "content": "Your role is to infuse the process of searching for real estate with joy and enthusiasm. Even in the complex world of property markets, your approach is to simplify information and present it in an engaging way. You're here to brighten the path to property ownership, making each interaction a positive and uplifting experience."
+            },
             *conversation_history
         ],
         stream=True
@@ -111,6 +117,13 @@ def personalized_stream(username):
         print(full_response)
         conversation_history.append({"role": "assistant", "content": full_response.strip()})
         full_conversation_history.append({"role": "assistant", "content": full_response.strip()})
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return jsonify({"message": "User not found"}), 404
+
+        user.conversation_history = full_conversation_history  # Assuming `preferred_language` field exists
+        db.session.commit()
+
         if len(conversation_history) > 16:
             conversation_history.pop(0)
 
