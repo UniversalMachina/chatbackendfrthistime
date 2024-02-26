@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, jsonify, url_for
 from models.User import User
 from models import db
-
+from models.Schedule import Schedule
 from sqlalchemy.exc import SQLAlchemyError
 
 from models import db
@@ -161,3 +161,54 @@ def embed(username):
     return render_template('embed.html', username=username)
 
 
+from datetime import datetime
+
+import os
+import smtplib
+from email.message import EmailMessage
+
+def send_email(receiver_email, subject, content):
+    sender_email = os.getenv("SENDER_EMAIL")
+    sender_password = os.getenv("SENDER_PASSWORD")
+    msg = EmailMessage()
+    msg.set_content(content)
+    msg['Subject'] = subject
+    msg['From'] = sender_email
+    msg['To'] = receiver_email
+
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.send_message(msg)
+    finally:
+        if server:
+            server.quit()
+
+
+@api_bp.route('/schedule', methods=['POST'])
+def add_schedule():
+    data = request.get_json()
+    new_schedule = Schedule(
+        start_time=datetime.strptime(data['start_time'], '%H:%M').time(),
+        end_time=datetime.strptime(data['end_time'], '%H:%M').time(),
+        length=data['length'],
+        date=datetime.strptime(data['date'], '%Y-%m-%d').date(),
+        agent_name=data['agent_name'],
+        customer_name=data['customer_name'],
+        agent_email=data['agent_email'],  # Get agent's email from request data
+        customer_email=data['customer_email'],  # Get customer's email from request data
+        user_id=data['user_id']
+    )
+    db.session.add(new_schedule)
+    db.session.commit()
+
+    # Prepare and send email to the agent and customer
+    subject = "New Schedule Created"
+    agent_content = f"Hello {data['agent_name']}, a new schedule has been created for you."
+    customer_content = f"Hello {data['customer_name']}, a new schedule has been created for you."
+
+    send_email(data['agent_email'], subject, agent_content)
+    send_email(data['customer_email'], subject, customer_content)
+
+    return jsonify({"message": "Schedule created successfully"}), 201
